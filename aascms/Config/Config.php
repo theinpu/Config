@@ -9,8 +9,4 @@ namespace aascms\Config;
 
 class Config {
 
-    function __construct() {
-        echo "Test\n";
-    }
-
-} 
+}
