@@ -1,5 +1,6 @@
 {
     "name": "aascms/config",
+    "version": "0.1",
     "description": "configurator",
     "authors": [
         {
