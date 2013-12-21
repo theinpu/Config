@@ -18,7 +18,11 @@ class Config {
         if(!file_exists($configFile)) {
             throw new \InvalidArgumentException("Config file not found");
         }
-        $this->config = json_decode(file_get_contents($configFile), true);
+        $cfg = json_decode(file_get_contents($configFile), true);
+        if(is_null($cfg)) {
+            throw new \RuntimeException("Corrupt config file");
+        }
+        $this->config = $cfg;
     }
 
     public function getAll() {

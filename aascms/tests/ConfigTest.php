@@ -14,10 +14,26 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     const ConfigFile = './cfg/config.json';
     private $configs;
 
+    const CorruptConfig = "./cfg/corrupt.json";
+
     public function testBaseConfig() {
         $cfg = new Config(self::ConfigFile);
         $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
         $this->assertEquals($this->configs, $cfg->getAll());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWrongConfigFile() {
+        new Config("wrong");
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testCorruptConfig() {
+        new Config(self::CorruptConfig);
     }
 
     protected function setUp() {
@@ -28,10 +44,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
             )
         );
         file_put_contents(self::ConfigFile, json_encode($this->configs));
+        touch(self::CorruptConfig);
     }
 
     protected function tearDown() {
         unlink(self::ConfigFile);
+        unlink(self::CorruptConfig);
     }
 }
  
