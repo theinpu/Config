@@ -49,6 +49,19 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $cfg->get("wrong key");
     }
 
+    public function testUpdateConfig() {
+        $cfg = new Config(self::ConfigFile);
+        $cfg->set('item1', 'updated');
+        $cfg->set('new item', 'test');
+        $this->assertNotEquals($this->configs['item1'], $cfg->get('item1'));
+        $oldCfg = new Config(self::ConfigFile);
+        $this->assertNotEquals($cfg->get('item1'), $oldCfg->get('item1'));
+        $this->assertTrue($cfg->save());
+        $savedConfig = new Config(self::ConfigFile);
+        $this->assertEquals($cfg->get('item1'), $savedConfig->get('item1'));
+        $this->assertEquals($cfg->get('new item'), $savedConfig->get('new item'));
+    }
+
     protected function setUp() {
         $this->configs = array(
             'item1' => 'value',

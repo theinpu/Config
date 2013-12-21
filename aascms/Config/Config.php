@@ -55,4 +55,19 @@ class Config {
         }
         return $this->config[$key];
     }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function set($key, $value) {
+        $this->config[$key] = $value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function save() {
+        return (file_put_contents($this->configFile, json_encode($this->config)) > 0);
+    }
 }
