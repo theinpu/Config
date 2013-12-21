@@ -36,9 +36,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         new Config(self::CorruptConfig);
     }
 
-    public function testSingleConfig() {
+    public function testSingleConfigItem() {
         $cfg = new Config(self::ConfigFile);
         $this->assertEquals($this->configs['item1'], $cfg->get('item1'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testNonExistsConfigItem() {
+        $cfg = new Config(self::ConfigFile);
+        $cfg->get("wrong key");
     }
 
     protected function setUp() {
