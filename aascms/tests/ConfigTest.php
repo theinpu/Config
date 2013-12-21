@@ -8,6 +8,7 @@
 namespace aascms\tests\Config;
 
 use aascms\Config\Config;
+use aascms\Config\ConfigManager;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase {
 
@@ -60,6 +61,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $savedConfig = new Config(self::ConfigFile);
         $this->assertEquals($cfg->get('item1'), $savedConfig->get('item1'));
         $this->assertEquals($cfg->get('new item'), $savedConfig->get('new item'));
+    }
+
+    public function testConfigManager() {
+        $cfg = ConfigManager::get(self::ConfigFile);
+        $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
     }
 
     protected function setUp() {
