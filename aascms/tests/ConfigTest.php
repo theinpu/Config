@@ -36,6 +36,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         new Config(self::CorruptConfig);
     }
 
+    public function testSingleConfig() {
+        $cfg = new Config(self::ConfigFile);
+        $this->assertEquals($this->configs['item1'], $cfg->get('item1'));
+    }
+
     protected function setUp() {
         $this->configs = array(
             'item1' => 'value',
