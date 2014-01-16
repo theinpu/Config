@@ -22,7 +22,15 @@ class Config {
      */
     public function __construct($configFile) {
         $this->checkConfigFile($configFile);
-        $this->readConfig();
+        if(strpos($configFile, '.json') !== false) {
+            $this->readJsonConfig();
+        }
+        elseif(strpos($configFile, '.php') !== false) {
+            $this->readPhpConfig();
+        }
+        else {
+            throw new \RuntimeException("Unsupported config file");
+        }
     }
 
     public function getAll() {
@@ -36,8 +44,16 @@ class Config {
         $this->configFile = $configFile;
     }
 
-    private function readConfig() {
+    private function readJsonConfig() {
         $cfg = json_decode(file_get_contents($this->configFile), true);
+        if(is_null($cfg)) {
+            throw new \RuntimeException("Corrupt config file");
+        }
+        $this->config = $cfg;
+    }
+
+    private function readPhpConfig() {
+        $cfg = require_once $this->configFile;
         if(is_null($cfg)) {
             throw new \RuntimeException("Corrupt config file");
         }

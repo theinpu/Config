@@ -12,13 +12,22 @@ use aascms\Config\ConfigManager;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase {
 
-    const ConfigFile = './cfg/config.json';
+    const ConfigFile = './config/config.json';
+    const ConfigPHPFile = './config/config.php';
+    const UnsupportedConfig = './config/unsupported.cfg';
+
+    const CorruptConfig = "./config/corrupt.json";
+
     private $configs;
 
-    const CorruptConfig = "./cfg/corrupt.json";
-
-    public function testBaseConfig() {
+    public function testBaseJsonConfig() {
         $cfg = new Config(self::ConfigFile);
+        $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
+        $this->assertEquals($this->configs, $cfg->getAll());
+    }
+
+    public function testBasePHPConfig() {
+        $cfg = new Config(self::ConfigPHPFile);
         $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
         $this->assertEquals($this->configs, $cfg->getAll());
     }
@@ -68,6 +77,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testUnsupportedFormat() {
+        new Config(self::UnsupportedConfig);
+    }
+
     protected function setUp() {
         $this->configs = array(
             'item1' => 'value',
@@ -76,11 +92,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
             )
         );
         file_put_contents(self::ConfigFile, json_encode($this->configs));
+        file_put_contents(self::ConfigPHPFile, "<?php\nreturn ".var_export($this->configs, true).";\n");
+        touch(self::UnsupportedConfig);
         touch(self::CorruptConfig);
     }
 
     protected function tearDown() {
         unlink(self::ConfigFile);
+        unlink(self::ConfigPHPFile);
         unlink(self::CorruptConfig);
     }
 }
