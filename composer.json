@@ -1,7 +1,10 @@
 {
     "name": "bc/config",
     "description": "configurator",
+    "type": "library",
     "version": "0.1.4",
+    "homepage": "https://github.com/theinpu/Config",
+    "license": "MIT",
     "authors": [
         {
             "name": "inpu",
