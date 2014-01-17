@@ -5,7 +5,7 @@
  * Time: 17:36
  */
 
-namespace aascms\Config;
+namespace bc\Config;
 
 class Config {
 

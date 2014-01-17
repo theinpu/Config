@@ -5,7 +5,7 @@
  * Time: 1:25
  */
 
-namespace aascms\Config;
+namespace bc\Config;
 
 class ConfigManager {
 

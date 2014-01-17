@@ -1,5 +1,5 @@
 {
-    "name": "aascms/config",
+    "name": "bc/config",
     "description": "configurator",
     "version": "0.1.4",
     "authors": [
@@ -15,6 +15,8 @@
         "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
-        "psr-0": { "aascms\\Config\\": "." }
+        "psr-0": {
+            "bc\\Config\\": "."
+        }
     }
 }

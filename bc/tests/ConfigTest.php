@@ -5,10 +5,10 @@
  * Time: 1:26
  */
 
-namespace aascms\tests\Config;
+namespace bc\tests\Config;
 
-use aascms\Config\Config;
-use aascms\Config\ConfigManager;
+use bc\Config\Config;
+use bc\Config\ConfigManager;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase {
 
@@ -22,13 +22,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 
     public function testBaseJsonConfig() {
         $cfg = new Config(self::ConfigFile);
-        $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
+        $this->assertInstanceOf('bc\\Config\\Config', $cfg);
         $this->assertEquals($this->configs, $cfg->getAll());
     }
 
     public function testBasePHPConfig() {
         $cfg = new Config(self::ConfigPHPFile);
-        $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
+        $this->assertInstanceOf('bc\\Config\\Config', $cfg);
         $this->assertEquals($this->configs, $cfg->getAll());
     }
 
@@ -74,7 +74,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 
     public function testConfigManager() {
         $cfg = ConfigManager::get(self::ConfigFile);
-        $this->assertInstanceOf('aascms\\Config\\Config', $cfg);
+        $this->assertInstanceOf('bc\\Config\\Config', $cfg);
     }
 
     /**
@@ -101,6 +101,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         unlink(self::ConfigFile);
         unlink(self::ConfigPHPFile);
         unlink(self::CorruptConfig);
+        unlink(self::UnsupportedConfig);
     }
 }
  
