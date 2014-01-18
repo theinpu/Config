@@ -1,4 +1,5 @@
 .idea
 vendor
 *.lock
-config
+config/*.php
+config/*.json

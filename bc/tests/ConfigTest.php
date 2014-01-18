@@ -7,28 +7,28 @@
 
 namespace bc\tests\Config;
 
-use bc\Config\Config;
-use bc\Config\ConfigManager;
+use bc\config\Config;
+use bc\config\ConfigManager;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase {
 
     const ConfigFile = './config/config.json';
     const ConfigPHPFile = './config/config.php';
+    const ConfigSuggestPHPFile = './config/config2.php';
     const UnsupportedConfig = './config/unsupported.cfg';
-
-    const CorruptConfig = "./config/corrupt.json";
+    const CorruptConfig = "./config/corrupt";
 
     private $configs;
 
     public function testBaseJsonConfig() {
         $cfg = new Config(self::ConfigFile);
-        $this->assertInstanceOf('bc\\Config\\Config', $cfg);
+        $this->assertInstanceOf('bc\\config\\Config', $cfg);
         $this->assertEquals($this->configs, $cfg->getAll());
     }
 
     public function testBasePHPConfig() {
         $cfg = new Config(self::ConfigPHPFile);
-        $this->assertInstanceOf('bc\\Config\\Config', $cfg);
+        $this->assertInstanceOf('bc\\config\\Config', $cfg);
         $this->assertEquals($this->configs, $cfg->getAll());
     }
 
@@ -42,8 +42,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \RuntimeException
      */
-    public function testCorruptConfig() {
-        new Config(self::CorruptConfig);
+    public function testCorruptConfigJSON()
+    {
+        new Config(self::CorruptConfig . '.json');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testCorruptConfigPHP()
+    {
+        new Config(self::CorruptConfig . '.php');
     }
 
     public function testSingleConfigItem() {
@@ -74,7 +83,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 
     public function testConfigManager() {
         $cfg = ConfigManager::get(self::ConfigFile);
-        $this->assertInstanceOf('bc\\Config\\Config', $cfg);
+        $this->assertInstanceOf('bc\\config\\Config', $cfg);
     }
 
     /**
@@ -82,6 +91,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
      */
     public function testUnsupportedFormat() {
         new Config(self::UnsupportedConfig);
+    }
+
+    public function testSuggestSuffix()
+    {
+        $cfg = new Config("./config/config");
+        $this->assertEquals($this->configs, $cfg->getAll());
+        $cfg = new Config("./config/config2");
+        $this->assertEquals($this->configs, $cfg->getAll());
     }
 
     protected function setUp() {
@@ -92,15 +109,19 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
             )
         );
         file_put_contents(self::ConfigFile, json_encode($this->configs));
-        file_put_contents(self::ConfigPHPFile, "<?php\nreturn ".var_export($this->configs, true).";\n");
+        file_put_contents(self::ConfigPHPFile, "<?php\n\n return " . var_export($this->configs, true) . ";\n");
+        file_put_contents(self::ConfigSuggestPHPFile, "<?php\n\n return " . var_export($this->configs, true) . ";\n");
         touch(self::UnsupportedConfig);
-        touch(self::CorruptConfig);
+        touch(self::CorruptConfig . '.json');
+        touch(self::CorruptConfig . '.php');
     }
 
     protected function tearDown() {
         unlink(self::ConfigFile);
         unlink(self::ConfigPHPFile);
-        unlink(self::CorruptConfig);
+        unlink(self::ConfigSuggestPHPFile);
+        unlink(self::CorruptConfig . '.json');
+        unlink(self::CorruptConfig . '.php');
         unlink(self::UnsupportedConfig);
     }
 }

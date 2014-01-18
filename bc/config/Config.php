@@ -5,7 +5,7 @@
  * Time: 17:36
  */
 
-namespace bc\Config;
+namespace bc\config;
 
 class Config {
 
@@ -22,14 +22,13 @@ class Config {
      */
     public function __construct($configFile) {
         $this->checkConfigFile($configFile);
-        if(strpos($configFile, '.json') !== false) {
+        if (strpos($this->configFile, '.json') !== false) {
             $this->readJsonConfig();
-        }
-        elseif(strpos($configFile, '.php') !== false) {
+        } elseif (strpos($this->configFile, '.php') !== false) {
             $this->readPhpConfig();
         }
         else {
-            throw new \RuntimeException("Unsupported config file");
+            throw new \RuntimeException("Unsupported config file ({$this->configFile})");
         }
     }
 
@@ -38,10 +37,14 @@ class Config {
     }
 
     private function checkConfigFile($configFile) {
-        if(!file_exists($configFile)) {
-            throw new \InvalidArgumentException("Config file not found");
+        if (strpos($configFile, '.') !== false
+            && file_exists($configFile)
+        ) {
+            $this->configFile = $configFile;
+        } else {
+            $configFile = $this->suggestFileName($configFile);
+            $this->configFile = $configFile;
         }
-        $this->configFile = $configFile;
     }
 
     private function readJsonConfig() {
@@ -54,7 +57,7 @@ class Config {
 
     private function readPhpConfig() {
         $cfg = require_once $this->configFile;
-        if(is_null($cfg)) {
+        if (!is_array($cfg)) {
             throw new \RuntimeException("Corrupt config file");
         }
         $this->config = $cfg;
@@ -85,5 +88,26 @@ class Config {
      */
     public function save() {
         return (file_put_contents($this->configFile, json_encode($this->config)) > 0);
+    }
+
+    /**
+     * @param $configFile
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    private function suggestFileName($configFile)
+    {
+        $config = $configFile . '.json';
+        if (!file_exists($config)) {
+            $config = $configFile . '.php';
+            if (!file_exists($config)) {
+                throw new \InvalidArgumentException("Config file not found ({$config})");
+            } else {
+                $config = $configFile . '.php';
+            }
+        } else {
+            $config = $configFile . '.json';
+        }
+        return $config;
     }
 }

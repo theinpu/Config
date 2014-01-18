@@ -5,9 +5,10 @@
  * Time: 1:25
  */
 
-namespace bc\Config;
+namespace bc\config;
 
-class ConfigManager {
+class ConfigManager
+{
 
     /**
      * @var Config[]
@@ -18,8 +19,9 @@ class ConfigManager {
      * @param string $file
      * @return Config
      */
-    public static function get($file) {
-        if(!array_key_exists($file, self::$configs)) {
+    public static function get($file)
+    {
+        if (!array_key_exists($file, self::$configs)) {
             self::$configs[$file] = new Config($file);
         }
         return self::$configs[$file];
