@@ -10,7 +10,8 @@ namespace bc\tests\Config;
 use bc\config\Config;
 use bc\config\ConfigManager;
 
-class ConfigTest extends \PHPUnit_Framework_TestCase {
+class ConfigTest extends \PHPUnit_Framework_TestCase
+{
 
     const ConfigFile = './config/config.json';
     const ConfigPHPFile = './config/config.php';
@@ -42,16 +43,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \RuntimeException
      */
-    public function testCorruptConfigJSON()
-    {
+    public function testCorruptConfigJSON() {
         new Config(self::CorruptConfig . '.json');
     }
 
     /**
      * @expectedException \RuntimeException
      */
-    public function testCorruptConfigPHP()
-    {
+    public function testCorruptConfigPHP() {
         new Config(self::CorruptConfig . '.php');
     }
 
@@ -68,7 +67,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $cfg->get("wrong key");
     }
 
-    public function testUpdateConfig() {
+    public function testUpdateJsonConfig() {
         $cfg = new Config(self::ConfigFile);
         $cfg->set('item1', 'updated');
         $cfg->set('new item', 'test');
@@ -79,6 +78,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $savedConfig = new Config(self::ConfigFile);
         $this->assertEquals($cfg->get('item1'), $savedConfig->get('item1'));
         $this->assertEquals($cfg->get('new item'), $savedConfig->get('new item'));
+    }
+
+    public function testUpdatePHPConfig() {
+        $cfg = new Config(self::ConfigPHPFile);
+        $cfg->set('item1', 'updated');
+        $this->assertNotEquals($this->configs['item1'], $cfg->get('item1'));
+        $oldCfg = new Config(self::ConfigPHPFile);
+        $this->assertNotEquals($oldCfg->get('item1'), $cfg->get('item1'));
+        $this->assertTrue($cfg->save());
+        $savedConfig = new Config(self::ConfigPHPFile);
+        $this->assertEquals($cfg->getAll(), $savedConfig->getAll());
     }
 
     public function testConfigManager() {
@@ -93,8 +103,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         new Config(self::UnsupportedConfig);
     }
 
-    public function testSuggestSuffix()
-    {
+    public function testSuggestSuffix() {
         $cfg = new Config("./config/config");
         $this->assertEquals($this->configs, $cfg->getAll());
         $cfg = new Config("./config/config2");
@@ -118,7 +127,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
 
     protected function tearDown() {
         unlink(self::ConfigFile);
-        unlink(self::ConfigPHPFile);
+        //unlink(self::ConfigPHPFile);
         unlink(self::ConfigSuggestPHPFile);
         unlink(self::CorruptConfig . '.json');
         unlink(self::CorruptConfig . '.php');

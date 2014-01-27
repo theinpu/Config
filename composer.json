@@ -2,7 +2,7 @@
     "name": "bc/config",
     "description": "configurator",
     "type": "library",
-    "version": "0.1.5",
+    "version": "0.1.5.1",
     "homepage": "https://github.com/theinpu/Config",
     "license": "MIT",
     "authors": [

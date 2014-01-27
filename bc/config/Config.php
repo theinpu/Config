@@ -7,13 +7,15 @@
 
 namespace bc\config;
 
-class Config {
+class Config
+{
 
     /**
      * @var array
      */
     private $config = array();
     private $configFile = '';
+    private $format = 'php';
 
     /**
      * @param string $configFile
@@ -26,8 +28,7 @@ class Config {
             $this->readJsonConfig();
         } elseif (strpos($this->configFile, '.php') !== false) {
             $this->readPhpConfig();
-        }
-        else {
+        } else {
             throw new \RuntimeException("Unsupported config file ({$this->configFile})");
         }
     }
@@ -49,18 +50,20 @@ class Config {
 
     private function readJsonConfig() {
         $cfg = json_decode(file_get_contents($this->configFile), true);
-        if(is_null($cfg)) {
-            throw new \RuntimeException("Corrupt config file");
+        if (is_null($cfg)) {
+            throw new \RuntimeException("Corrupt config file (JSON)");
         }
         $this->config = $cfg;
+        $this->format = 'json';
     }
 
     private function readPhpConfig() {
-        $cfg = require_once $this->configFile;
+        $cfg = require $this->configFile;
         if (!is_array($cfg)) {
-            throw new \RuntimeException("Corrupt config file");
+            throw new \RuntimeException("Corrupt config file ('{$this->configFile}') ");
         }
         $this->config = $cfg;
+        $this->format = 'php';
     }
 
     /**
@@ -69,7 +72,7 @@ class Config {
      * @return mixed
      */
     public function get($key) {
-        if(!array_key_exists($key, $this->config)) {
+        if (!array_key_exists($key, $this->config)) {
             throw new \InvalidArgumentException("Key not exists");
         }
         return $this->config[$key];
@@ -87,7 +90,14 @@ class Config {
      * @return bool
      */
     public function save() {
-        return (file_put_contents($this->configFile, json_encode($this->config)) > 0);
+        switch ($this->format) {
+            case 'json':
+                return (file_put_contents($this->configFile, json_encode($this->config)) > 0);
+            case 'php':
+            default:
+                return (file_put_contents(
+                        $this->configFile, "<?php\n\n return " . var_export($this->config, true) . ";\n") > 0);
+        }
     }
 
     /**
@@ -95,8 +105,7 @@ class Config {
      * @return string
      * @throws \InvalidArgumentException
      */
-    private function suggestFileName($configFile)
-    {
+    private function suggestFileName($configFile) {
         $config = $configFile . '.json';
         if (!file_exists($config)) {
             $config = $configFile . '.php';
